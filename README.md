@@ -13,7 +13,9 @@ This is a simple web application for managing a user's wishlist. Users can regis
 
 ## iOS Application
 
-An initial prototype of the iOS app is available in the repository. Please note that the iOS app is still under development, and some features may not be fully implemented or may have bugs.
+An initial prototype of the iOS app is available in a separate repository:
+[Wishlist iOS App](https://github.com/Ne-kolay/wishlist-ios)
+Please note that the iOS app is still under development, and some features may not be fully implemented or may have bugs.
 
 ## Technologies Used
 
