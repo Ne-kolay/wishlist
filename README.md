@@ -11,6 +11,10 @@ This is a simple web application for managing a user's wishlist. Users can regis
 
 **Note**: User interaction features (such as sharing wishlists, following other users, etc.) are currently under development and will be added in future releases.
 
+## iOS Application
+
+An initial prototype of the iOS app is available in the repository. Please note that the iOS app is still under development, and some features may not be fully implemented or may have bugs.
+
 ## Technologies Used
 
 - Java 21
