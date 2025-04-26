@@ -1,6 +1,8 @@
 package com.example.wishlist.services;
 
 import com.example.wishlist.dto.WishlistCreateDTO;
+import com.example.wishlist.dto.WishlistUpdateDTO;
+import com.example.wishlist.models.PrivacyLevel;
 import com.example.wishlist.models.User;
 import com.example.wishlist.models.Wishlist;
 import com.example.wishlist.repositories.UserRepository;
@@ -24,15 +26,33 @@ public class WishlistService {
     }
 
     public Wishlist createWishlist(WishlistCreateDTO wishlistCreateDTO) {
+        System.out.println("📥 Пришёл DTO: " + wishlistCreateDTO);
+        System.out.println("🔍 Название: " + wishlistCreateDTO.getName());
+        System.out.println("📝 Описание: " + wishlistCreateDTO.getDescription());
+        System.out.println("🔐 Приватность: " + wishlistCreateDTO.getPrivacyLevel());
+        System.out.println("👤 userId: " + wishlistCreateDTO.getUserId());
+
+        if (wishlistCreateDTO.getUserId() == null) {
+            throw new RuntimeException("❌ userId is null! Проверь поле в JSON (должно быть 'userId')");
+        }
+
         User owner = userRepository.findById(wishlistCreateDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("❌ User not found with id: " + wishlistCreateDTO.getUserId()));
 
         Wishlist wishlist = new Wishlist();
         wishlist.setName(wishlistCreateDTO.getName());
         wishlist.setDescription(wishlistCreateDTO.getDescription());
         wishlist.setOwner(owner);
 
-        return wishlistRepository.save(wishlist);
+        try {
+            wishlist.setPrivacyLevel(PrivacyLevel.valueOf(wishlistCreateDTO.getPrivacyLevel().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("❌ Invalid privacy level: " + wishlistCreateDTO.getPrivacyLevel());
+        }
+
+        Wishlist saved = wishlistRepository.save(wishlist);
+        System.out.println("✅ Вишлист сохранён с id: " + saved.getId());
+        return saved;
     }
 
     public List<Wishlist> getAllWishlists() {
@@ -51,11 +71,24 @@ public class WishlistService {
         wishlistRepository.deleteById(id);
     }
 
-    public Wishlist updateWishlist(Long id, Wishlist wishlistDetails) {
+    public Wishlist updateWishlist(Long id, WishlistUpdateDTO wishlistUpdateDTO) {
         Wishlist wishlist = wishlistRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Wishlist not found"));
-        wishlist.setName(wishlistDetails.getName());
-        wishlist.setDescription(wishlistDetails.getDescription());
+        if (wishlistUpdateDTO.getName() != null) {
+            wishlist.setName(wishlistUpdateDTO.getName());
+        }
+        if (wishlistUpdateDTO.getDescription() != null) {
+            wishlist.setDescription(wishlistUpdateDTO.getDescription());
+        }
+        if (wishlistUpdateDTO.getPrivacyLevel() != null) {
+            try {
+                wishlist.setPrivacyLevel(
+                        PrivacyLevel.valueOf(wishlistUpdateDTO.getPrivacyLevel().toUpperCase())
+                );
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid privacy level: " + wishlistUpdateDTO.getPrivacyLevel());
+            }
+        }
 
         return wishlistRepository.save(wishlist);
     }

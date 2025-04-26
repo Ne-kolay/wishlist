@@ -58,4 +58,11 @@ public class UserController {
 
         return ResponseEntity.ok(new PasswordCheckResponse(isValid));
     }
+
+    @GetMapping("/id/{email}")
+    public ResponseEntity<?> getUserIdByEmail(@PathVariable String email) {
+        return userService.findByEmail(email)
+                .map(user -> ResponseEntity.ok(user.getId())) // Возвращаем userId
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

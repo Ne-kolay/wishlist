@@ -17,7 +17,6 @@ public class Gift {
     @Column(nullable = false, precision = 10, scale = 3)
     private BigDecimal estimatedPrice;
 
-    @Lob
     @Column
     private String description;
 

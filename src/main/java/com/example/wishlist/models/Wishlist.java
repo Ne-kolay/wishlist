@@ -22,8 +22,11 @@ public class Wishlist {
     @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Gift> gifts = new ArrayList<>();
 
-    @Lob
+
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private PrivacyLevel privacyLevel;
 
     public Wishlist() {}
 
@@ -42,4 +45,8 @@ public class Wishlist {
 
     public String getDescription()                 { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public PrivacyLevel getPrivacyLevel() { return privacyLevel; }
+    public void setPrivacyLevel(PrivacyLevel privacyLevel) { this.privacyLevel = privacyLevel; }
 }
+

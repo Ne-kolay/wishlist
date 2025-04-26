@@ -6,6 +6,8 @@ import com.example.wishlist.models.Wishlist;
 import com.example.wishlist.repositories.UserRepository;
 import com.example.wishlist.repositories.WishlistRepository;
 import com.example.wishlist.services.WishlistService;
+import com.example.wishlist.dto.WishlistUpdateDTO;
+import com.example.wishlist.models.PrivacyLevel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +53,7 @@ class WishlistServiceTest {
 
     @Test
     void testCreateWishlist() {
-        WishlistCreateDTO createDTO = new WishlistCreateDTO("Christmas Wishlist", "Wishlist for Christmas", user.getId());
+        WishlistCreateDTO createDTO = new WishlistCreateDTO("Christmas Wishlist", "Wishlist for Christmas", user.getId(), "PUBLIC");
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(wishlistRepository.save(any(Wishlist.class))).thenReturn(wishlist);
@@ -108,18 +110,23 @@ class WishlistServiceTest {
 
     @Test
     void testUpdateWishlist() {
-        Wishlist updatedWishlist = new Wishlist();
-        updatedWishlist.setId(wishlist.getId());
-        updatedWishlist.setName("Updated Wishlist");
-        updatedWishlist.setOwner(user);
+        WishlistUpdateDTO updateDTO = new WishlistUpdateDTO();
+        updateDTO.setName("Updated Wishlist");
+        updateDTO.setDescription("Updated description");
+        updateDTO.setPrivacyLevel("PRIVATE");
+
+        wishlist.setDescription("Old description");
+        wishlist.setPrivacyLevel(PrivacyLevel.PUBLIC);
 
         when(wishlistRepository.findById(wishlist.getId())).thenReturn(Optional.of(wishlist));
-        when(wishlistRepository.save(any(Wishlist.class))).thenReturn(updatedWishlist);
+        when(wishlistRepository.save(any(Wishlist.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Wishlist result = wishlistService.updateWishlist(wishlist.getId(), updatedWishlist);
+        Wishlist result = wishlistService.updateWishlist(wishlist.getId(), updateDTO);
 
         assertNotNull(result);
         assertEquals("Updated Wishlist", result.getName());
+        assertEquals("Updated description", result.getDescription());
+        assertEquals(PrivacyLevel.PRIVATE, result.getPrivacyLevel());
         verify(wishlistRepository, times(1)).save(any(Wishlist.class));
     }
 }
